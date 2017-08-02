@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: List
+items:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: jenkins-slave
+    spec: {}
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: jenkins-slave-oc150
+    spec:
+      source:
+        type: Git
+        git:
+          uri: https://github.com/qujinping/jenkins-slave.git
+        images:
+        - from: 
+            kind: ImageStreamTag
+            name: skopeo-artifacts:latest
+          paths: 
+            - sourcePath: /opt/app-root/bin/skopeo
+              destinationDir: .
+        - from: 
+            kind: ImageStreamTag
+            name: kompose-artifacts:latest
+          paths: 
+            - sourcePath: /opt/app-root/bin/kompose
+              destinationDir: .
+      strategy:
+        dockerStrategy:
+          dockerfilePath: Dockerfile.oc150
+          from: 
+            kind: ImageStreamTag
+            name: jenkins-slave-base-centos7:latest
+        type: Docker
+      output:
+        to:
+          kind: ImageStreamTag
+          name: jenkins-slave:openshift-15
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChange: {}
+        - type: ImageChange 
+          imageChange:
+            from:
+              kind: ImageStreamTag
+              name: skopeo-artifacts:latest
+        - type: ImageChange 
+          imageChange:
+            from:
+              kind: ImageStreamTag
+              name: kompose-artifacts:latest
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: jenkins-slave-oc141
+    spec:
+      source:
+        type: Git
+        git:
+          uri: https://github.com/qujinping/jenkins-slave.git
+        images:
+        - from: 
+            kind: ImageStreamTag
+            name: skopeo-artifacts:latest
+          paths: 
+            - sourcePath: /opt/app-root/bin/skopeo
+              destinationDir: .
+        - from: 
+            kind: ImageStreamTag
+            name: kompose-artifacts:latest
+          paths: 
+            - sourcePath: /opt/app-root/bin/kompose
+              destinationDir: .
+      strategy:
+        dockerStrategy:
+          dockerfilePath: Dockerfile.oc141
+          from: 
+            kind: ImageStreamTag
+            name: jenkins-slave-base-centos7:latest
+        type: Docker
+      output:
+        to:
+          kind: ImageStreamTag
+          name: jenkins-slave:openshift-14
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChange: {}
+        - type: ImageChange 
+          imageChange:
+            from:
+              kind: ImageStreamTag
+              name: skopeo-artifacts:latest
+        - type: ImageChange 
+          imageChange:
+            from:
+              kind: ImageStreamTag
+              name: kompose-artifacts:latest

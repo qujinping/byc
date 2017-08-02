@@ -1,0 +1,256 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "cicd"
+                },
+                "name": "cicd-compute-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "limits.cpu": 240,
+                        "limits.memory": "1024Gi",
+                        "requests.cpu": 240,
+                        "requests.memory": "1024Gi",
+                        "requests.storage": "5000Gi"
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "cicd"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "cicd"
+                },
+                "name": "cicd-object-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "configmaps": 10,
+                        "openshift.io/imagestreams": 100,
+                        "persistentvolumeclaims": 10,
+                        "pods": 200,
+                        "replicationcontrollers": 50,
+                        "resourcequotas": 10,
+                        "secrets": 50,
+                        "services": 50
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "cicd"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Project",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/node-selector": "role=comp"
+                },
+                "labels": {
+                    "project": "cicd"
+                },
+                "name": "cicd"
+            },
+            "spec": {},
+            "status": {}
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "core-resource-limits",
+                "namespace": "cicd"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "cpu": "18000m",
+                            "memory": "48Gi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "4"
+                        },
+                        "min": {
+                            "cpu": "1000m",
+                            "memory": "1Gi"
+                        },
+                        "type": "Pod"
+                    },
+                    {
+                        "default": {
+                            "cpu": "1000m",
+                            "memory": "1Gi"
+                        },
+                        "max": {
+                            "cpu": "12000m",
+                            "memory": "32Gi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "4"
+                        },
+                        "min": {
+                            "cpu": "1000m",
+                            "memory": "1Gi"
+                        },
+                        "type": "Container"
+                    },
+                    {
+                        "max": {
+                            "storage": "100Gi"
+                        },
+                        "min": {
+                            "storage": "2Gi"
+                        },
+                        "type": "PersistentVolumeClaim"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "openshift-res-limits",
+                "namespace": "cicd"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "storage": "2Gi"
+                        },
+                        "type": "openshift.io/Image"
+                    },
+                    {
+                        "max": {
+                            "openshift.io/image-tags": 20,
+                            "openshift.io/images": 30
+                        },
+                        "type": "openshift.io/ImageStream"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "groupNames": [
+                "system:serviceaccounts:cicd"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-pullers",
+                "namespace": "cicd"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:cicd"
+                }
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-builders",
+                "namespace": "cicd"
+            },
+            "roleRef": {
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:cicd:builder"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:deployers",
+                "namespace": "cicd"
+            },
+            "roleRef": {
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:cicd:deployer"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "admin",
+                "namespace": "cicd"
+            },
+            "roleRef": {
+                "name": "admin"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "banchuanyu"
+                }
+            ],
+            "userNames": [
+                "banchuanyu"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "tester",
+                "namespace": "cicd"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:cicd-test"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-test
+spec:
+  parallelism: 1    
+  completions: 1   
+  template:
+    metadata:
+      name: load-test
+    spec:
+      containers:
+      - name: load-test
+        image: docker-registry.default.svc:5000/sock/load-test:latest
+        command: 
+        - /opt/app-root/scripts/run 
+        - -h 
+        - "sock.192.168.64.2.nip.io" 
+      restartPolicy: Never
+

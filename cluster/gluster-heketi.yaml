@@ -1,0 +1,14 @@
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+  creationTimestamp: null
+  name: gluster-heketi
+parameters:
+  resturl: http://heketi.storage.svc.cluster.local:8080
+  restuser: admin
+  secretName: heketi-admin-secret
+  secretNamespace: storage
+  volumetype: replicate:2
+provisioner: kubernetes.io/glusterfs

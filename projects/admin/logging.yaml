@@ -1,0 +1,256 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "logging"
+                },
+                "name": "logging-compute-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "limits.cpu": 4,
+                        "limits.memory": "32Gi",
+                        "requests.cpu": 4,
+                        "requests.memory": "16Gi",
+                        "requests.storage": "50Gi"
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "logging"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "logging"
+                },
+                "name": "logging-object-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "configmaps": 10,
+                        "openshift.io/imagestreams": 50,
+                        "persistentvolumeclaims": 5,
+                        "pods": 200,
+                        "replicationcontrollers": 50,
+                        "resourcequotas": 10,
+                        "secrets": 50,
+                        "services": 50
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "logging"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Project",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/node-selector": "role=comp"
+                },
+                "labels": {
+                    "project": "logging"
+                },
+                "name": "logging"
+            },
+            "spec": {},
+            "status": {}
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "core-resource-limits",
+                "namespace": "logging"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "cpu": "2000m",
+                            "memory": "20Gi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "4"
+                        },
+                        "min": {
+                            "cpu": "100m",
+                            "memory": "96Mi"
+                        },
+                        "type": "Pod"
+                    },
+                    {
+                        "default": {
+                            "cpu": "100m",
+                            "memory": "96Mi"
+                        },
+                        "max": {
+                            "cpu": "2000m",
+                            "memory": "20Gi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "4"
+                        },
+                        "min": {
+                            "cpu": "100m",
+                            "memory": "96Mi"
+                        },
+                        "type": "Container"
+                    },
+                    {
+                        "max": {
+                            "storage": "64Gi"
+                        },
+                        "min": {
+                            "storage": "256Mi"
+                        },
+                        "type": "PersistentVolumeClaim"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "openshift-res-limits",
+                "namespace": "logging"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "storage": "2Gi"
+                        },
+                        "type": "openshift.io/Image"
+                    },
+                    {
+                        "max": {
+                            "openshift.io/image-tags": 20,
+                            "openshift.io/images": 30
+                        },
+                        "type": "openshift.io/ImageStream"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "groupNames": [
+                "system:serviceaccounts:logging"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-pullers",
+                "namespace": "logging"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:logging"
+                }
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-builders",
+                "namespace": "logging"
+            },
+            "roleRef": {
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:logging:builder"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:deployers",
+                "namespace": "logging"
+            },
+            "roleRef": {
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:logging:deployer"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "admin",
+                "namespace": "logging"
+            },
+            "roleRef": {
+                "name": "admin"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "admin"
+                }
+            ],
+            "userNames": [
+                "admin"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "tester",
+                "namespace": "logging"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:logging-test"
+                }
+            ]
+        }
+    ]
+}

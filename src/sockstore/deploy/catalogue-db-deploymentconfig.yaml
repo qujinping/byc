@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: null
+  labels:
+    service: catalogue-db
+  name: catalogue-db
+spec:
+  replicas: 1
+  selector:
+    service: catalogue-db
+  strategy:
+    resources: {}
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: catalogue-db
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "true"
+        - name: MYSQL_DATABASE
+          value: socksdb
+        image: ' '
+        name: catalogue-db
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: catalogue-db-empty0
+      restartPolicy: Always
+      volumes:
+      - emptyDir: {}
+        name: catalogue-db-empty0
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - catalogue-db
+      from:
+        kind: ImageStreamTag
+        name: catalogue-db:latest
+    type: ImageChange
+status: {}

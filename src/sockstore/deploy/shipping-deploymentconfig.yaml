@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: null
+  labels:
+    service: shipping
+  name: shipping
+spec:
+  replicas: 1
+  selector:
+    service: shipping
+  strategy:
+    resources: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: shipping
+    spec:
+      containers:
+      - env:
+        - name: APP_OPTIONS
+          value: --port=10003 --db=cart-db.sockstore-prod.svc --zipkin=zipkin.sockstore-prod.svc
+        - name: JAVA_APP_JAR
+          value: shipping.jar
+        image: ' '
+        name: shipping
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 2048Mi
+          requests:
+            cpu: 2000m
+            memory: 2048Mi
+        ports:
+        - containerPort: 10003
+          hostPort: 10003
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            host: localhost
+            path: /health
+            port: 10003
+            scheme: HTTP
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            host: localhost
+            path: /health
+            port: 10003
+            scheme: HTTP
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /tmp
+          name: shipping-tmpfs0
+      hostNetwork: true
+      restartPolicy: Always
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: shipping-tmpfs0
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - shipping
+      from:
+        kind: ImageStreamTag
+        name: shipping:latest
+    type: ImageChange
+status: {}

@@ -1,0 +1,44 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}
+    spec: {}
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}
+    spec:
+      source:
+        type: Git
+        git:
+          uri: ${APP_SOURCE_REPOSITORY_URL} 
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${APP_BUILDER_IMAGE}
+            namespace: mid
+        type: Source
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}:latest
+      triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChange: {}
+parameters:
+  - name: APP_NAME
+    description: Name of the app to be built
+    required: true
+  - name: APP_SOURCE_REPOSITORY_URL 
+    displayName: Source Repository URL 
+    description: The URL of the repository with your application source code 
+    required: true 
+  - name: APP_BUILDER_IMAGE 
+    displayName: Result runtime image of your app 
+    description: The build result runtime image for your application 
+    required: true 

@@ -1,0 +1,100 @@
+version: '2'
+
+services:
+  front-end:
+    image: docker-registry.default.svc:5000/sock/front-end
+  edge-router:
+    image: docker-registry.default.svc:5000/sock/edge-router
+    ports:
+      - '8080:8080'
+      - '8081:8081'
+    tmpfs:
+      - /var/run
+  catalogue:
+    image: docker-registry.default.svc:5000/sock/catalogue
+    command: scripts/run -port=8080 -images=./data/
+    environment:
+      - ZIPKIN=http://zipkin:9411/api/v1/spans
+  catalogue-db:
+    image: docker-registry.default.svc:5000/sock/catalogue-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=socksdb
+    volumes:
+      - /var/lib/mysql
+  cart:
+    image: docker-registry.default.svc:5000/sock/cart
+    mem_limit: 512M
+    environment:
+      - APP_OPTIONS=--port=8080
+      - JAVA_APP_JAR=carts.jar
+    tmpfs:
+      - /tmp
+  cart-db:
+    image: docker-registry.default.svc:5000/sock/mongo:3
+    tmpfs:
+      - /tmp
+    volumes:
+      - /data/configdb
+      - /data/db
+  orders:
+    image: docker-registry.default.svc:5000/sock/orders
+    mem_limit: 512M
+    environment:
+      - APP_OPTIONS=--port=8080
+      - JAVA_APP_JAR=orders.jar
+    tmpfs:
+      - /tmp
+  orders-db:
+    image: docker-registry.default.svc:5000/sock/mongo:3
+    tmpfs:
+      - /tmp
+    volumes:
+      - /data/configdb
+      - /data/db
+  shipping:
+    image: docker-registry.default.svc:5000/sock/shipping
+    mem_limit: 512M
+    environment:
+      - APP_OPTIONS=--port=8080
+      - JAVA_APP_JAR=shipping.jar
+    tmpfs:
+      - /tmp
+  queue-master:
+    image: docker-registry.default.svc:5000/sock/queue-master
+    mem_limit: 512M
+    environment:
+      - APP_OPTIONS=--port=8080
+      - JAVA_APP_JAR=queue-master.jar
+    tmpfs:
+      - /tmp
+  rabbitmq:
+    image: docker-registry.default.svc:5000/sock/rabbitmq:3
+  payment:
+    image: docker-registry.default.svc:5000/sock/payment
+    command: scripts/run -port=8080
+    environment:
+      - ZIPKIN=http://zipkin:9411/api/v1/spans
+  user:
+    image: docker-registry.default.svc:5000/sock/user
+    command: scripts/run -port=8080
+    environment:
+      - HATEAOS=user:8080
+      - USER_DATABASE=mongodb
+      - MONGO_HOST=user-db:27017
+      - ZIPKIN=http://zipkin:9411/api/v1/spans
+  user-db:
+    image: docker-registry.default.svc:5000/sock/user-db
+    tmpfs:
+      - /tmp
+    volumes:
+      - /data/configdb
+      - /data/db
+      - /data/db-users
+  zipkin:
+    image: docker-registry.default.svc:5000/sock/zipkin 
+    tmpfs:
+      - /tmp
+    ports:
+      - "9411:9411"

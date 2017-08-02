@@ -1,0 +1,75 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+[OSEv3:children]
+masters
+etcd
+nodes
+lb
+
+# Set variables common for all OSEv3 hosts
+[OSEv3:vars]
+# SSH user, this user should allow ssh based auth without requiring a password
+ansible_ssh_user=root
+
+# logging
+#openshift_logging_es_cluster_size=4
+
+# If ansible_ssh_user is not root, ansible_become must be set to true
+#ansible_become=true
+
+openshift_deployment_type=origin
+
+osm_cluster_network_cidr=172.32.0.0/16
+osm_host_subnet_length=8
+
+# Configure dnsmasq for cluster dns, switch the host's local resolver to use dnsmasq
+# and configure node's dnsIP to point at the node's local dnsmasq instance.
+openshift_use_dnsmasq=true
+# Configure dnsIP in the node config
+# openshift_dns_ip=10.108.6.6
+
+# Available disk space ({:.1f} GB) for the volume containing /var
+openshift_check_min_host_disk_gb=5
+
+# Maximum disk consumption of pod's emptyDir on per node & project basis
+openshift_node_local_quota_per_fsgroup=10Gi
+
+# uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=c3-container-cloud14.bj
+openshift_master_cluster_public_hostname=c3-container-cloud14.bj
+
+# default selectors for router and registry services
+openshift_router_selector='role=infra'
+openshift_registry_selector='role=infra'
+
+## enable ntp on masters to ensure proper failover
+openshift_clock_enabled=true
+
+# host group for masters
+[masters]
+c3-container-cloud11.bj
+c3-container-cloud12.bj
+c3-container-cloud13.bj
+
+[etcd]
+c3-container-cloud11.bj
+c3-container-cloud12.bj
+c3-container-cloud13.bj
+
+[lb]
+c3-container-cloud14.bj
+
+# host group for nodes, includes region info
+[nodes]
+c3-container-cloud11.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'infra'}" openshift_ip=10.136.3.44 openshift_schedulable=true
+c3-container-cloud12.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'infra'}"  openshift_ip=10.136.3.43 openshift_schedulable=true
+c3-container-cloud13.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'infra'}"  openshift_ip=10.136.3.42 openshift_schedulable=true
+c3-container-cloud14.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'comp'}"  openshift_ip=10.136.3.41
+c3-container-cloud15.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'comp'}"  openshift_ip=10.136.2.21
+c3-container-cloud16.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'comp'}"  openshift_ip=10.136.2.22
+c3-container-cloud17.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'store'}"  openshift_ip=10.136.2.23
+c3-container-cloud18.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'store'}"  openshift_ip=10.136.2.25
+c3-container-cloud19.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'store'}"  openshift_ip=10.136.2.26
+c3-container-cloud20.bj openshift_node_labels="{'region': 'bj', 'zone': 'c3', 'role': 'store'}"  openshift_ip=10.136.2.27

@@ -1,0 +1,256 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "mid"
+                },
+                "name": "mid-compute-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "limits.cpu": 4,
+                        "limits.memory": "32Gi",
+                        "requests.cpu": 4,
+                        "requests.memory": "16Gi",
+                        "requests.storage": "50Gi"
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "mid"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "mid"
+                },
+                "name": "mid-object-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "configmaps": 2,
+                        "openshift.io/imagestreams": 50,
+                        "persistentvolumeclaims": 5,
+                        "pods": 200,
+                        "replicationcontrollers": 50,
+                        "resourcequotas": 10,
+                        "secrets": 50,
+                        "services": 50
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "mid"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Project",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/node-selector": "role=comp"
+                },
+                "labels": {
+                    "project": "mid"
+                },
+                "name": "mid"
+            },
+            "spec": {},
+            "status": {}
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "core-resource-limits",
+                "namespace": "mid"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "cpu": "500m",
+                            "memory": "750Mi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "10"
+                        },
+                        "min": {
+                            "cpu": "10m",
+                            "memory": "5Mi"
+                        },
+                        "type": "Pod"
+                    },
+                    {
+                        "default": {
+                            "cpu": "500m",
+                            "memory": "512Mi"
+                        },
+                        "max": {
+                            "cpu": "500m",
+                            "memory": "750Mi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "10"
+                        },
+                        "min": {
+                            "cpu": "10m",
+                            "memory": "5Mi"
+                        },
+                        "type": "Container"
+                    },
+                    {
+                        "max": {
+                            "storage": "64Gi"
+                        },
+                        "min": {
+                            "storage": "256Mi"
+                        },
+                        "type": "PersistentVolumeClaim"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "openshift-res-limits",
+                "namespace": "mid"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "storage": "2Gi"
+                        },
+                        "type": "openshift.io/Image"
+                    },
+                    {
+                        "max": {
+                            "openshift.io/image-tags": 20,
+                            "openshift.io/images": 30
+                        },
+                        "type": "openshift.io/ImageStream"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "groupNames": [
+                "system:serviceaccounts:mid"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-pullers",
+                "namespace": "mid"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:mid"
+                }
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-builders",
+                "namespace": "mid"
+            },
+            "roleRef": {
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:mid:builder"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:deployers",
+                "namespace": "mid"
+            },
+            "roleRef": {
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:mid:deployer"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "admin",
+                "namespace": "mid"
+            },
+            "roleRef": {
+                "name": "admin"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "qujinping"
+                }
+            ],
+            "userNames": [
+                "qujinping"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "tester",
+                "namespace": "mid"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:mid-test"
+                }
+            ]
+        }
+    ]
+}

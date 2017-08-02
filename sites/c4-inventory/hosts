@@ -1,0 +1,69 @@
+# Create an OSEv3 group that contains the masters and nodes groups
+ [OSEv3:children]
+ masters
+ etcd
+ nodes
+ lb
+
+ # Set variables common for all OSEv3 hosts
+ [OSEv3:vars]
+ #If ansible_ssh_user is not root, ansible_become must be set to true
+ #ansible_become=true
+ ansible_ssh_user=root
+
+ openshift_deployment_type=origin
+
+ osm_cluster_network_cidr=172.32.0.0/16
+ osm_host_subnet_length=8
+
+ # Configure dnsmasq for cluster dns, switch the host's local resolver to use dnsmasq
+ # and configure node's dnsIP to point at the node's local dnsmasq instance.
+ openshift_use_dnsmasq=true
+ # Configure dnsIP in the node config
+ # openshift_dns_ip=10.108.6.6
+
+ # Available disk space ({:.1f} GB) for the volume containing /var
+ openshift_check_min_host_disk_gb=5
+
+ # Maximum disk consumption of pod's emptyDir on per node & project basis
+ openshift_node_local_quota_per_fsgroup=10Gi
+
+ # uncomment the following to enable htpasswd authentication; defaults to DenyAllPasswordIdentityProvider
+ openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+
+ openshift_master_cluster_method=native
+ openshift_master_cluster_hostname=c4-container-cloud04.bj
+ openshift_master_cluster_public_hostname=c4-container-cloud04.bj
+
+ # default selectors for router and registry services
+ openshift_router_selector='role=infra'
+ openshift_registry_selector='role=infra'
+
+ ## enable ntp on masters to ensure proper failover
+ openshift_clock_enabled=true
+
+ # host group for masters
+ [masters]
+ c4-container-cloud01.bj
+ c4-container-cloud02.bj
+ c4-container-cloud03.bj
+
+ [etcd]
+ c4-container-cloud01.bj
+ c4-container-cloud02.bj
+ c4-container-cloud03.bj
+
+ [lb]
+ c4-container-cloud04.bj
+
+ # host group for nodes, includes region info
+ [nodes]
+ c4-container-cloud01.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'infra'}" openshift_ip=10.132.21.11 openshift_schedulable=true
+ c4-container-cloud02.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'infra'}" openshift_ip=10.132.21.14 openshift_schedulable=true
+ c4-container-cloud03.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'infra'}" openshift_ip=10.132.21.15 openshift_schedulable=true
+ c4-container-cloud04.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'comp'}"  openshift_ip=10.132.21.31
+ c4-container-cloud05.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'comp'}"  openshift_ip=10.132.21.34
+ c4-container-cloud06.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'comp'}"  openshift_ip=10.132.21.55
+ c4-container-cloud07.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'store'}" openshift_ip=10.132.21.51
+ c4-container-cloud08.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'store'}" openshift_ip=10.132.21.54
+ c4-container-cloud09.bj openshift_node_labels="{'region': 'bj', 'zone': 'c4', 'role': 'store'}" openshift_ip=10.132.37.6

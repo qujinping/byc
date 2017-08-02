@@ -1,0 +1,36 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-pipeline
+    spec:
+      strategy:
+        type: JenkinsPipeline
+        jenkinsPipelineStrategy:
+          jenkinsfile: |-
+            node('xiaomi') {
+              stage 'deploy'
+              git clone --depth 1 ${APP_SOURCE_REPOSITORY_URL}
+              stage 'deploy'
+              kompose up -f ${APP_SOURCE_CONTEXT_DIR}/docker-compose.yml --provider "openshift" --emptyvols --insecure-repository=true
+            }
+      triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChange: {}
+parameters:
+  - name: APP_NAME
+    description: Name of the app to be built
+    required: true
+  - name: APP_SOURCE_REPOSITORY_URL 
+    displayName: Source Repository URL 
+    description: The URL of the repository with your application source code 
+    value: https://github.com/qujinping/microservices-demo.git
+    required: true 
+  - name: APP_SOURCE_CONTEXT_DIR
+    value: "./microservices-demo/deploy/docker-compose/"
+    displayName: Context directory of source code to be built
+    description: The Context directory of source code to be built
+    required: true 

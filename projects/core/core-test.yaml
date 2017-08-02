@@ -1,0 +1,172 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Project",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/node-selector": "role=comp"
+                },
+                "labels": {
+                    "project": "core"
+                },
+                "name": "core-test"
+            },
+            "spec": {},
+            "status": {}
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "core-resource-limits",
+                "namespace": "core-test"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "cpu": "500m",
+                            "memory": "750Mi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "10"
+                        },
+                        "min": {
+                            "cpu": "10m",
+                            "memory": "5Mi"
+                        },
+                        "type": "Pod"
+                    },
+                    {
+                        "default": {
+                            "cpu": "100m",
+                            "memory": "256Mi"
+                        },
+                        "max": {
+                            "cpu": "500m",
+                            "memory": "750Mi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "10"
+                        },
+                        "min": {
+                            "cpu": "10m",
+                            "memory": "5Mi"
+                        },
+                        "type": "Container"
+                    },
+                    {
+                        "max": {
+                            "storage": "64Gi"
+                        },
+                        "min": {
+                            "storage": "256Mi"
+                        },
+                        "type": "PersistentVolumeClaim"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "groupNames": [
+                "system:serviceaccounts:core-test"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-pullers",
+                "namespace": "core-test"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:core-test"
+                }
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-builders",
+                "namespace": "core-test"
+            },
+            "roleRef": {
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:core-test:builder"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:deployers",
+                "namespace": "core-test"
+            },
+            "roleRef": {
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:core-test:deployer"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "admin",
+                "namespace": "core-test"
+            },
+            "roleRef": {
+                "name": "admin"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "qujinping"
+                }
+            ],
+            "userNames": [
+                "qujinping"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "owner",
+                "namespace": "core-test"
+            },
+            "roleRef": {
+                "name": "edit"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:core"
+                }
+            ]
+        }
+    ]
+}

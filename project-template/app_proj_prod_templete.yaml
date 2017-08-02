@@ -1,0 +1,148 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: project-request
+objects:
+- apiVersion: v1
+  kind: Project
+  metadata:
+    name: ${PROJECT_NAME}
+    annotations:
+      openshift.io/node-selector: role=comp
+    labels:
+      project: ${PROJECT_NAME}
+  spec: {}
+  status: {}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: ${PROJECT_NAME}-compute-quota
+    namespace: ${PROJECT_NAME}
+    labels:
+      project: ${PROJECT_NAME}
+  spec:
+    hard:
+      requests.cpu: 32 
+      requests.memory: 128Gi 
+      requests.storage: 50Gi
+      limits.cpu: 32 
+      limits.memory: 128Gi 
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: ${PROJECT_NAME}-object-quota
+    namespace: ${PROJECT_NAME}
+    labels:
+      project: ${PROJECT_NAME}
+  spec:
+    hard:
+      persistentvolumeclaims: 5
+      secrets: 50
+      resourcequotas: 10
+      pods: 200
+      replicationcontrollers: 50
+      services: 50
+      configmaps: 50
+      openshift.io/imagestreams: 50
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: core-res-limits
+    namespace: ${PROJECT_NAME}
+  spec:
+    limits:
+    - type: Pod
+      max:
+        cpu: 2000m
+        memory: 2048Mi
+      min:
+        cpu: 500m
+        memory: 512Mi
+      maxLimitRequestRatio:
+        cpu: "4" 
+    - type: Container
+      default:
+        cpu: 1000m
+        memory: 1024Mi
+      max:
+        cpu: 2000m
+        memory: 2048Mi
+      min:
+        cpu: 500m
+        memory: 512Mi
+      maxLimitRequestRatio:
+        cpu: "4" 
+    - type: PersistentVolumeClaim
+      min: 
+        storage: 256Mi 
+      max:
+        storage: 64Gi 
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: openshift-res-limits
+    namespace: ${PROJECT_NAME}
+  spec:
+    limits:
+    - type: openshift.io/Image
+      max:
+        storage: 2Gi
+    - type: openshift.io/ImageStream
+      max:
+        openshift.io/image-tags: 20 
+        openshift.io/images: 30
+- apiVersion: v1
+  groupNames:
+  - system:serviceaccounts:${PROJECT_NAME}
+  kind: RoleBinding
+  metadata:
+    name: system:image-pullers
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: system:image-puller
+  subjects:
+  - kind: SystemGroup
+    name: system:serviceaccounts:${PROJECT_NAME}
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: system:image-builders
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: system:image-builder
+  subjects:
+  - kind: ServiceAccount
+    name: builder
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:builder
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: system:deployers
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: system:deployer
+  subjects:
+  - kind: ServiceAccount
+    name: deployer
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:deployer
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: admin
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: admin
+  subjects:
+  - kind: User
+    name: ${PROJECT_ADMIN_USER}
+  userNames:
+  - ${PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_NAME
+  description: Name of the project
+  required: true
+- name: PROJECT_ADMIN_USER
+  description: Admin user of the project
+  required: true

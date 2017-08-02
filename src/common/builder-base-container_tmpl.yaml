@@ -1,0 +1,63 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${BASE_IMAGE_NAME}-${OS} 
+    spec: {}
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${BASE_IMAGE_NAME}-${OS}
+    spec:
+      strategy:
+        type: Custom
+        customStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${FROM_IMAGE_STREAM_NAME}
+            namespace: ${FROM_IMAGE_STREAM_NAMESPACE}
+          exposeDockerSocket: true
+          env:
+            - name: "NAMESPACE"
+              value: "${NAMESPACE}"
+            - name: "BASE_IMAGE_NAME"
+              value: "${BASE_IMAGE_NAME}"
+            - name: "SOURCE_REPOSITORY"
+              value: "${SOURCE_REPOSITORY}"
+            - name: "OUTPUT_REGISTRY"
+              value: "${OUTPUT_REGISTRY}"
+      triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChange: {}
+parameters:
+  - name: NAMESPACE
+    description: Namespace of the app to be built
+    required: true
+  - name: BASE_IMAGE_NAME
+    description: Base image name of the app to be built
+    required: true
+  - name: OS
+    description:  OS of the app to be built on
+    required: true
+  - name: SOURCE_REPOSITORY 
+    displayName: Source Repository URL 
+    description: The URL of the repository with your image source code 
+    required: true 
+  - name: FROM_IMAGE_STREAM_NAME
+    displayName: Image stream name to be used to replace the FROM of your Dockerfile
+    description: Image stream name to be used to replace the FROM of your Dockerfile
+    value: "custom-docker-builder:latest"
+    required: true 
+  - name: FROM_IMAGE_STREAM_NAMESPACE
+    displayName: Namespace of image stream to be used to replace the FROM of your Dockerfile
+    description: Namespace of image stream to be used to replace the FROM of your Dockerfile
+    value: "core"
+    required: true 
+  - name: OUTPUT_REGISTRY
+    displayName: Private docker registry where output image will be pushed
+    description: Private docker registry where output image will be pushed
+    value: "docker-registry.default.svc:5000"
+    required: true 

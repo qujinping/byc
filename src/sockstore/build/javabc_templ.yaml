@@ -1,0 +1,105 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-artifacts
+    spec: {}
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-artifacts
+    spec:
+      source:
+        type: Git
+        git:
+          uri: ${APP_SOURCE_REPOSITORY_URL} 
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${APP_BUILDER_IMAGE}
+            namespace: mid
+          env:
+            - name: MAVEN_MIRROR_URL
+              value: http://nexus-nexus.router.default.svc.cluster.local/repository/maven-public/
+        type: Source
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}-artifacts:latest
+      triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChange: {}
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}
+    spec:
+      source:
+        type: Dockerfile
+        dockerfile: |-
+          FROM core/${APP_BUILDER_RUNTIME_IMAGE}
+          COPY . /opt/app-root/
+          USER root
+          RUN rm -rf .pki Dockerfile && fix-permissions ./
+          USER 1001
+        images:
+          - from: 
+              kind: ImageStreamTag
+              name: ${APP_NAME}-artifacts:latest
+            paths: 
+              - sourcePath: /opt/app-root/bin
+                destinationDir: .
+              - sourcePath: /opt/app-root/libs
+                destinationDir: .
+              - sourcePath: /opt/app-root/etc
+                destinationDir: .
+              - sourcePath: /opt/app-root/data
+                destinationDir: .
+              - sourcePath: /opt/app-root/scripts
+                destinationDir: .
+      strategy:
+        dockerStrategy:
+          from: 
+            kind: ImageStreamTag
+            name: ${APP_BUILDER_RUNTIME_IMAGE}
+            namespace: core
+        type: Docker
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}:latest
+      triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChange: {}
+      - type: ImageChange 
+        imageChange:
+          from:
+            kind: ImageStreamTag
+            name: ${APP_NAME}-artifacts:latest
+parameters:
+  - name: APP_NAME
+    description: Name of the app to be built
+    required: true
+  - name: APP_SOURCE_REPOSITORY_URL 
+    displayName: Source Repository URL 
+    description: The URL of the repository with your application source code 
+    required: true 
+  - name: APP_BUILDER_IMAGE 
+    displayName: Result runtime image of your app 
+    description: The build result runtime image for your application 
+    required: true 
+  - name: APP_BUILDER_RUNTIME_IMAGE
+    displayName: The runtime image for Source-to-Image Build of your app 
+    description: The runtime image to build your application in s2i way
+    value: runtime-openjdk-18-centos7:latest
+    required: true 

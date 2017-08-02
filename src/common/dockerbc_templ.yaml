@@ -1,0 +1,54 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}
+    spec: {}
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}
+    spec:
+      source:
+        type: Git
+        git:
+          uri: ${APP_SOURCE_REPOSITORY_URL} 
+        contextDir: ${APP_SOURCE_CONTEXT_DIR}
+      strategy:
+        type: Docker
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${FROM_IMAGE_STREAM_NAME}
+            namespace: ${FROM_IMAGE_STREAM_NAMESPACE}
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${APP_NAME}:latest
+      triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChange: {}
+parameters:
+  - name: APP_NAME
+    description: Name of the app to be built
+    required: true
+  - name: APP_SOURCE_REPOSITORY_URL 
+    displayName: Source Repository URL 
+    description: The URL of the repository with your application source code 
+    required: true 
+  - name: APP_SOURCE_CONTEXT_DIR
+    value: "."
+    displayName: Context directory where your Dockerfile locates
+    description: Context directory where your Dockerfile locates
+    required: false 
+  - name: FROM_IMAGE_STREAM_NAME
+    displayName: Image stream name to be used to replace the FROM of your Dockerfile
+    description: Image stream name to be used to replace the FROM of your Dockerfile
+    required: true 
+  - name: FROM_IMAGE_STREAM_NAMESPACE
+    displayName: Namespace of image stream to be used to replace the FROM of your Dockerfile
+    description: Namespace of image stream to be used to replace the FROM of your Dockerfile
+    required: true 

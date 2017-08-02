@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: null
+  labels:
+    service: catalogue
+  name: catalogue
+spec:
+  replicas: 1
+  selector:
+    service: catalogue
+  strategy:
+    resources: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: catalogue
+    spec:
+      containers:
+      - args:
+        - scripts/run
+        - -port=10000
+        - -images=./data/
+        - -DSN=catalogue_user:default_password@tcp(catalogue-db.sockstore-prod.svc:3306)/socksdb
+        env:
+        - name: ZIPKIN
+          value: http://zipkin.sockstore-prod.svc:9411/api/v1/spans
+        image: ' '
+        name: catalogue
+        resources: {}
+        ports:
+        - containerPort: 10000
+          hostPort: 10000
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            host: localhost
+            path: /health
+            port: 10000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            host: localhost
+            path: /health
+            port: 10000
+            scheme: HTTP
+          timeoutSeconds: 1
+          initialDelaySeconds: 10
+        resources: {}
+      hostNetwork: true
+      restartPolicy: Always
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - catalogue
+      from:
+        kind: ImageStreamTag
+        name: catalogue:latest
+    type: ImageChange
+status: {}

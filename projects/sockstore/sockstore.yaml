@@ -1,0 +1,256 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "sockstore"
+                },
+                "name": "sockstore-compute-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "limits.cpu": 32,
+                        "limits.memory": "128Gi",
+                        "requests.cpu": 32,
+                        "requests.memory": "128Gi",
+                        "requests.storage": "50Gi"
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "sockstore"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ClusterResourceQuota",
+            "metadata": {
+                "labels": {
+                    "project": "sockstore"
+                },
+                "name": "sockstore-object-quota"
+            },
+            "spec": {
+                "quota": {
+                    "hard": {
+                        "configmaps": 50,
+                        "openshift.io/imagestreams": 50,
+                        "persistentvolumeclaims": 5,
+                        "pods": 200,
+                        "replicationcontrollers": 50,
+                        "resourcequotas": 10,
+                        "secrets": 50,
+                        "services": 50
+                    }
+                },
+                "selector": {
+                    "labels": [
+                        {
+                            "project": "sockstore"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Project",
+            "metadata": {
+                "annotations": {
+                    "openshift.io/node-selector": "role=comp"
+                },
+                "labels": {
+                    "project": "sockstore"
+                },
+                "name": "sockstore"
+            },
+            "spec": {},
+            "status": {}
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "core-resource-limits",
+                "namespace": "sockstore"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "cpu": "500m",
+                            "memory": "750Mi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "10"
+                        },
+                        "min": {
+                            "cpu": "10m",
+                            "memory": "5Mi"
+                        },
+                        "type": "Pod"
+                    },
+                    {
+                        "default": {
+                            "cpu": "500m",
+                            "memory": "512Mi"
+                        },
+                        "max": {
+                            "cpu": "500m",
+                            "memory": "750Mi"
+                        },
+                        "maxLimitRequestRatio": {
+                            "cpu": "10"
+                        },
+                        "min": {
+                            "cpu": "10m",
+                            "memory": "5Mi"
+                        },
+                        "type": "Container"
+                    },
+                    {
+                        "max": {
+                            "storage": "64Gi"
+                        },
+                        "min": {
+                            "storage": "256Mi"
+                        },
+                        "type": "PersistentVolumeClaim"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "LimitRange",
+            "metadata": {
+                "name": "openshift-res-limits",
+                "namespace": "sockstore"
+            },
+            "spec": {
+                "limits": [
+                    {
+                        "max": {
+                            "storage": "2Gi"
+                        },
+                        "type": "openshift.io/Image"
+                    },
+                    {
+                        "max": {
+                            "openshift.io/image-tags": 20,
+                            "openshift.io/images": 30
+                        },
+                        "type": "openshift.io/ImageStream"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "groupNames": [
+                "system:serviceaccounts:sockstore"
+            ],
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-pullers",
+                "namespace": "sockstore"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:sockstore"
+                }
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:image-builders",
+                "namespace": "sockstore"
+            },
+            "roleRef": {
+                "name": "system:image-builder"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "builder"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:sockstore:builder"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "system:deployers",
+                "namespace": "sockstore"
+            },
+            "roleRef": {
+                "name": "system:deployer"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "deployer"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:sockstore:deployer"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "admin",
+                "namespace": "sockstore"
+            },
+            "roleRef": {
+                "name": "admin"
+            },
+            "subjects": [
+                {
+                    "kind": "User",
+                    "name": "qujinping"
+                }
+            ],
+            "userNames": [
+                "qujinping"
+            ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "tester",
+                "namespace": "sockstore"
+            },
+            "roleRef": {
+                "name": "system:image-puller"
+            },
+            "subjects": [
+                {
+                    "kind": "SystemGroup",
+                    "name": "system:serviceaccounts:sockstore-test"
+                }
+            ]
+        }
+    ]
+}
