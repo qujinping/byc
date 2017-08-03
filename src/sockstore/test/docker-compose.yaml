@@ -2,21 +2,21 @@ version: '2'
 
 services:
   front-end:
-    image: docker-registry.default.svc:5000/sock/front-end
+    image: docker-registry.default.svc:5000/sockstore/front-end
   edge-router:
-    image: docker-registry.default.svc:5000/sock/edge-router
+    image: docker-registry.default.svc:5000/sockstore/edge-router
     ports:
       - '8080:8080'
       - '8081:8081'
     tmpfs:
       - /var/run
   catalogue:
-    image: docker-registry.default.svc:5000/sock/catalogue
+    image: docker-registry.default.svc:5000/sockstore/catalogue
     command: scripts/run -port=8080 -images=./data/
     environment:
       - ZIPKIN=http://zipkin:9411/api/v1/spans
   catalogue-db:
-    image: docker-registry.default.svc:5000/sock/catalogue-db
+    image: docker-registry.default.svc:5000/sockstore/catalogue-db
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
@@ -24,7 +24,7 @@ services:
     volumes:
       - /var/lib/mysql
   cart:
-    image: docker-registry.default.svc:5000/sock/cart
+    image: docker-registry.default.svc:5000/sockstore/cart
     mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
@@ -32,14 +32,14 @@ services:
     tmpfs:
       - /tmp
   cart-db:
-    image: docker-registry.default.svc:5000/sock/mongo:3
+    image: docker-registry.default.svc:5000/sockstore/mongo:3
     tmpfs:
       - /tmp
     volumes:
       - /data/configdb
       - /data/db
   orders:
-    image: docker-registry.default.svc:5000/sock/orders
+    image: docker-registry.default.svc:5000/sockstore/orders
     mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
@@ -47,14 +47,14 @@ services:
     tmpfs:
       - /tmp
   orders-db:
-    image: docker-registry.default.svc:5000/sock/mongo:3
+    image: docker-registry.default.svc:5000/sockstore/mongo:3
     tmpfs:
       - /tmp
     volumes:
       - /data/configdb
       - /data/db
   shipping:
-    image: docker-registry.default.svc:5000/sock/shipping
+    image: docker-registry.default.svc:5000/sockstore/shipping
     mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
@@ -62,7 +62,7 @@ services:
     tmpfs:
       - /tmp
   queue-master:
-    image: docker-registry.default.svc:5000/sock/queue-master
+    image: docker-registry.default.svc:5000/sockstore/queue-master
     mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
@@ -70,14 +70,14 @@ services:
     tmpfs:
       - /tmp
   rabbitmq:
-    image: docker-registry.default.svc:5000/sock/rabbitmq:3
+    image: docker-registry.default.svc:5000/sockstore/rabbitmq:3
   payment:
-    image: docker-registry.default.svc:5000/sock/payment
+    image: docker-registry.default.svc:5000/sockstore/payment
     command: scripts/run -port=8080
     environment:
       - ZIPKIN=http://zipkin:9411/api/v1/spans
   user:
-    image: docker-registry.default.svc:5000/sock/user
+    image: docker-registry.default.svc:5000/sockstore/user
     command: scripts/run -port=8080
     environment:
       - HATEAOS=user:8080
@@ -85,7 +85,7 @@ services:
       - MONGO_HOST=user-db:27017
       - ZIPKIN=http://zipkin:9411/api/v1/spans
   user-db:
-    image: docker-registry.default.svc:5000/sock/user-db
+    image: docker-registry.default.svc:5000/sockstore/user-db
     tmpfs:
       - /tmp
     volumes:
@@ -93,7 +93,7 @@ services:
       - /data/db
       - /data/db-users
   zipkin:
-    image: docker-registry.default.svc:5000/sock/zipkin 
+    image: docker-registry.default.svc:5000/sockstore/zipkin 
     tmpfs:
       - /tmp
     ports:
