@@ -31,7 +31,7 @@ services:
       - JAVA_APP_JAR=carts.jar
     tmpfs:
       - /tmp
-  cart-db:
+  carts-db:
     image: docker-registry.default.svc:5000/sockstore/mongo:3
     tmpfs:
       - /tmp
