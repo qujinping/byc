@@ -12,11 +12,11 @@ objects:
   spec:
     quota: 
       hard:
-        requests.cpu: 4 
-        requests.memory: 16Gi 
-        requests.storage: 50Gi
-        limits.cpu: 4 
-        limits.memory: 32Gi 
+        requests.cpu: 32 
+        requests.memory: 128Gi 
+        requests.storage: 128Gi
+        limits.cpu: 32 
+        limits.memory: 128Gi 
     selector:
       labels: 
       - project:  ${PROJECT_NAME}
@@ -59,30 +59,30 @@ objects:
     limits:
     - type: Pod
       max:
-        cpu: 2000m
-        memory: 2048Mi
+        cpu: 16
+        memory: 64Gi
       min:
         cpu: 500m
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4" 
+        cpu: "2" 
     - type: Container
       default:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 1
+        memory: 1Gi
       max:
-        cpu: 2000m
-        memory: 2048Mi
+        cpu: 16
+        memory: 64Gi
       min:
         cpu: 500m
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4" 
+        cpu: "2" 
     - type: PersistentVolumeClaim
       min: 
-        storage: 256Mi 
+        storage: 1Gi 
       max:
-        storage: 64Gi 
+        storage: 128Gi 
 - apiVersion: v1
   kind: LimitRange
   metadata:

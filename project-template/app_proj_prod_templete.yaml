@@ -24,7 +24,7 @@ objects:
     hard:
       requests.cpu: 32 
       requests.memory: 128Gi 
-      requests.storage: 50Gi
+      requests.storage: 256Gi
       limits.cpu: 32 
       limits.memory: 128Gi 
 - apiVersion: v1
@@ -53,30 +53,30 @@ objects:
     limits:
     - type: Pod
       max:
-        cpu: 2000m
-        memory: 2048Mi
+        cpu: 32
+        memory: 64Gi
       min:
         cpu: 500m
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4" 
+        cpu: "2" 
     - type: Container
       default:
-        cpu: 1000m
-        memory: 1024Mi
+        cpu: 2
+        memory: 2Gi
       max:
-        cpu: 2000m
-        memory: 2048Mi
+        cpu: 32
+        memory: 64Gi
       min:
         cpu: 500m
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4" 
+        cpu: "2" 
     - type: PersistentVolumeClaim
       min: 
-        storage: 256Mi 
+        storage: 1Gi 
       max:
-        storage: 64Gi 
+        storage: 256Gi 
 - apiVersion: v1
   kind: LimitRange
   metadata:

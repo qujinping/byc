@@ -22,30 +22,30 @@ objects:
     limits:
     - type: Pod
       max:
-        cpu: 2000m
-        memory: 2048Mi
+        cpu: 16
+        memory: 64Gi
       min:
         cpu: 500m
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4"
+        cpu: "2"
     - type: Container
       default:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 1
+        memory: 1Gi
       max:
-        cpu: 2000m
-        memory: 2048Mi
+        cpu: 16
+        memory: 64Gi
       min:
         cpu: 500m
         memory: 512Mi
       maxLimitRequestRatio:
-        cpu: "4"
+        cpu: "2"
     - type: PersistentVolumeClaim
       min: 
-        storage: 256Mi 
+        storage: 1Gi 
       max:
-        storage: 64Gi 
+        storage: 128Gi 
 - apiVersion: v1
   groupNames:
   - system:serviceaccounts:${PROJECT_NAME}-test
