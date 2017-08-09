@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sockstore-test
+spec:
+  containers:
+  - name: sockstore-test
+    image: docker-registry.default.svc:5000/sockstore/load-test:latest
+    command: 
+    - /opt/app-root/scripts/run 
+    - -h 
+    - "edge-router.sockstore-test.svc:8081" 
+    - -c 
+    - "5"
+    - -r 
+    - "100"
+  restartPolicy: Never
+
