@@ -34,7 +34,7 @@
                     "limits.memory": "128Gi",
                     "requests.cpu": 32,
                     "requests.memory": "128Gi",
-                    "requests.storage": "50Gi"
+                    "requests.storage": "256Gi"
                 }
             }
         },
@@ -72,11 +72,11 @@
                 "limits": [
                     {
                         "max": {
-                            "cpu": "2000m",
-                            "memory": "2048Mi"
+                            "cpu": 32,
+                            "memory": "64Gi"
                         },
                         "maxLimitRequestRatio": {
-                            "cpu": "4"
+                            "cpu": "2"
                         },
                         "min": {
                             "cpu": "500m",
@@ -86,15 +86,15 @@
                     },
                     {
                         "default": {
-                            "cpu": "1000m",
-                            "memory": "1024Mi"
+                            "cpu": 2,
+                            "memory": "2Gi"
                         },
                         "max": {
-                            "cpu": "2000m",
-                            "memory": "2048Mi"
+                            "cpu": 32,
+                            "memory": "64Gi"
                         },
                         "maxLimitRequestRatio": {
-                            "cpu": "4"
+                            "cpu": "2"
                         },
                         "min": {
                             "cpu": "500m",
@@ -104,10 +104,10 @@
                     },
                     {
                         "max": {
-                            "storage": "64Gi"
+                            "storage": "256Gi"
                         },
                         "min": {
-                            "storage": "256Mi"
+                            "storage": "1Gi"
                         },
                         "type": "PersistentVolumeClaim"
                     }

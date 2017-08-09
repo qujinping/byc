@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  name: int-test
+spec:
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        node('sockstore') {
+          def services = ['cart', 'carts-db', 'catalogue', 'catalogue-db', 'edge-router', 'front-end', 'orders', 'orders-db', 'payment', 'queue-master', 'rabbitmq', 'shipping', 'user', 'user-db', 'zipkin'] as String[]
+          def servicePorts = [8080,27017,8080,3306,8080,8079,8080,27017,8080,8080,5672,8080,8080,27017,9411] as int[]
+
+          stage ('Checkout') {
+            git url:'https://github.com/qujinping/byc'
+          }
+          
+          stage ('Test-Setup') {
+            sh(script: 'kompose up -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/docker-compose.yaml --provider "openshift" --emptyvols --insecure-repository=true', returnStatus: true)
+            sh "sleep 600"
+          }
+          
+          stage('Test-Wait') {
+            for (i = 0; i <services.size(); i++) {
+              def svc =services[i]
+              def port = servicePorts[i]
+              def svcReady = 0
+              for (j = 0; j< 2; j++) {
+                def retstatus = sh(script: "nc --send-only -w 60 ${svc} ${port} </dev/null ", returnStatus: true)
+                if (retstatus == 0) {
+                  svcReady = 1
+                  break
+                }
+                else {
+                  println("${svc} is NOT ready, wait for 60 seconds and then try again")
+                  sh "sleep 60"
+                }
+              }
+            
+              if (svcReady == 1) {
+                println("${svc} is ready")
+              }
+              else {
+                println("${svc} is NOT ready, abort")
+              }
+            }
+          }
+
+          stage ('Test-Teardown') {
+            for (i = 0; i <services.size(); i++) {
+              def svc =services[i]
+              sh "oc delete svc/${svc} dc/${svc} is/${svc}"
+            }  
+          }
+        }

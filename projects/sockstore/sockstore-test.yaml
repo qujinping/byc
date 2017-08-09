@@ -29,42 +29,42 @@
                 "limits": [
                     {
                         "max": {
-                            "cpu": "500m",
-                            "memory": "750Mi"
+                            "cpu": 16,
+                            "memory": "64Gi"
                         },
                         "maxLimitRequestRatio": {
-                            "cpu": "10"
+                            "cpu": "2"
                         },
                         "min": {
-                            "cpu": "10m",
-                            "memory": "5Mi"
+                            "cpu": "500m",
+                            "memory": "512Mi"
                         },
                         "type": "Pod"
                     },
                     {
                         "default": {
-                            "cpu": "100m",
-                            "memory": "256Mi"
+                            "cpu": 1,
+                            "memory": "1Gi"
                         },
                         "max": {
-                            "cpu": "500m",
-                            "memory": "750Mi"
+                            "cpu": 16,
+                            "memory": "64Gi"
                         },
                         "maxLimitRequestRatio": {
-                            "cpu": "10"
+                            "cpu": "2"
                         },
                         "min": {
-                            "cpu": "10m",
-                            "memory": "5Mi"
+                            "cpu": "500m",
+                            "memory": "512Mi"
                         },
                         "type": "Container"
                     },
                     {
                         "max": {
-                            "storage": "64Gi"
+                            "storage": "128Gi"
                         },
                         "min": {
-                            "storage": "256Mi"
+                            "storage": "1Gi"
                         },
                         "type": "PersistentVolumeClaim"
                     }

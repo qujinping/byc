@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   front-end:
@@ -25,7 +25,6 @@ services:
       - /var/lib/mysql
   cart:
     image: docker-registry.default.svc:5000/sockstore/cart
-    mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
       - JAVA_APP_JAR=carts.jar
@@ -40,7 +39,6 @@ services:
       - /data/db
   orders:
     image: docker-registry.default.svc:5000/sockstore/orders
-    mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
       - JAVA_APP_JAR=orders.jar
@@ -55,7 +53,6 @@ services:
       - /data/db
   shipping:
     image: docker-registry.default.svc:5000/sockstore/shipping
-    mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
       - JAVA_APP_JAR=shipping.jar
@@ -63,7 +60,6 @@ services:
       - /tmp
   queue-master:
     image: docker-registry.default.svc:5000/sockstore/queue-master
-    mem_limit: 512M
     environment:
       - APP_OPTIONS=--port=8080
       - JAVA_APP_JAR=queue-master.jar
@@ -98,3 +94,11 @@ services:
       - /tmp
     ports:
       - "9411:9411"
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2048M
+        reservations:
+          cpus: '2'
+          memory: 2048M
