@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sockstore-test
+spec:
+  parallelism: 1    
+  completions: 1   
+  template:
+    metadata:
+      name: sockstore-test
+    spec:
+      containers:
+      - name: sockstore-test
+        image: docker-registry.default.svc:5000/sockstore/load-test:latest
+        command: 
+        - /opt/app-root/scripts/run 
+        - -h 
+        - "http://edge-router:8080" 
+      restartPolicy: Never
+
