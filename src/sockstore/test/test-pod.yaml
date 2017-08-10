@@ -14,5 +14,6 @@ spec:
     - "5"
     - -r 
     - "100"
+    - "> /dev/termination-log"
   restartPolicy: Never
 

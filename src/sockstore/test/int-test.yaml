@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: BuildConfig
 metadata:
-  name: int-test
+  name: qjppipe
 spec:
   strategy:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfile: |-
-        node('sockstore') {
+        node('qjp') {
           def services = ['cart', 'carts-db', 'catalogue', 'catalogue-db', 'edge-router', 'front-end', 'orders', 'orders-db', 'payment', 'queue-master', 'rabbitmq', 'shipping', 'user', 'user-db', 'zipkin'] as String[]
           def servicePorts = [8080,27017,8080,3306,8080,8079,8080,27017,8080,8080,5672,8080,8080,27017,9411] as int[]
 
@@ -15,41 +15,86 @@ spec:
             git url:'https://github.com/qujinping/byc'
           }
           
-          stage ('Test-Setup') {
+          stage ('TestEnv-Setup') {
+            // cleanup if necessary
+            sh(script: 'kompose down -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/docker-compose.yaml --provider "openshift"')
+            sh(script: 'oc delete pod/sockstore-test', returnStatus: true)
+            
+            // launch test services
             sh(script: 'kompose up -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/docker-compose.yaml --provider "openshift" --emptyvols --insecure-repository=true', returnStatus: true)
-            sh "sleep 600"
+            sh "sleep 30"
           }
           
-          stage('Test-Wait') {
-            for (i = 0; i <services.size(); i++) {
-              def svc =services[i]
-              def port = servicePorts[i]
-              def svcReady = 0
-              for (j = 0; j< 2; j++) {
-                def retstatus = sh(script: "nc --send-only -w 60 ${svc} ${port} </dev/null ", returnStatus: true)
-                if (retstatus == 0) {
-                  svcReady = 1
-                  break
+          stage('TestEnv-ReadynessProbe') {
+            // double check all relevant services are ready
+            for (checkRound = 0; checkRound < 2; checkRound++) {
+              def someSvcIsBroken = 0    
+              
+              for (svcIdx = 0; svcIdx <services.size(); svcIdx++) {
+                def svc =services[svcIdx]
+                def port = servicePorts[svcIdx]
+                def svcReady = 0
+                for (svcProbeNum = 0; svcProbeNum< 2; svcProbeNum++) {
+                  def retStatus = sh(script: "nc --send-only -w 60 ${svc} ${port} </dev/null ", returnStatus: true)
+                  if (retStatus == 0) {
+                    svcReady = 1
+                    break
+                  }
+                  else {
+                    println("${svc} is NOT ready, wait for 60 seconds and then try again")
+                    sh "sleep 60"
+                  }
+                }
+            
+                if (svcReady == 1) {
+                  println("${svc} is ready")
                 }
                 else {
-                  println("${svc} is NOT ready, wait for 60 seconds and then try again")
-                  sh "sleep 60"
+                  println("${svc} is NOT ready")
+                  someSvcIsBroken = 1
+                  break;
                 }
               }
-            
-              if (svcReady == 1) {
-                println("${svc} is ready")
-              }
-              else {
-                println("${svc} is NOT ready, abort")
+              
+              if (someSvcIsBroken == 1) {
+                  if (checkRound == 0) {
+                    // it's the 1st try, and found some service is not ready  
+                    println("Some service is NOT ready. We'll wait for 120 seconds and try again")
+                    sh "sleep 120"
+                  }
+                  else {
+                    // it's the 2nd try, we'll just abort
+                    println("Some service is NOT ready. We abort")
+                  }
               }
             }
           }
 
-          stage ('Test-Teardown') {
+          stage ('Test') {
+              sh "oc create -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/test-pod.yaml"
+              for(checkTestRes = 0; checkTestRes < 100; checkTestRes++) {
+                def output = sh(script: 'oc get pod/sockstore-test -o go-template="{{range .status.containerStatuses}}{{.state.terminated.exitCode}}{{end}}"', returnStdout: true)
+                if (output == "<no value>") {
+                    sh "sleep 10"
+                }
+                else if (output == "0") {
+                    println("Test case completed sucessfully!!!")
+                    break
+                }
+                else {
+                    println("Test case failed")
+                    break
+                }
+              }
+          }
+
+          stage ('TestEnv-Teardown') {
             for (i = 0; i <services.size(); i++) {
               def svc =services[i]
               sh "oc delete svc/${svc} dc/${svc} is/${svc}"
-            }  
+            }
           }
+
+
         }
+
