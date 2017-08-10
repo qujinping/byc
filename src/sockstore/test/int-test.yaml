@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: BuildConfig
 metadata:
-  name: qjppipe
+  name: integration
 spec:
   strategy:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfile: |-
-        node('qjp') {
+        node('xiaomi') {
           def services = ['cart', 'carts-db', 'catalogue', 'catalogue-db', 'edge-router', 'front-end', 'orders', 'orders-db', 'payment', 'queue-master', 'rabbitmq', 'shipping', 'user', 'user-db', 'zipkin'] as String[]
           def servicePorts = [8080,27017,8080,3306,8080,8079,8080,27017,8080,8080,5672,8080,8080,27017,9411] as int[]
 
@@ -17,11 +17,11 @@ spec:
           
           stage ('TestEnv-Setup') {
             // cleanup if necessary
-            sh(script: 'kompose down -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/docker-compose.yaml --provider "openshift"')
+            sh(script: 'kompose down -f /tmp/workspace/sockstore-test-integration/src/sockstore/test/docker-compose.yaml --provider "openshift"')
             sh(script: 'oc delete pod/sockstore-test', returnStatus: true)
             
             // launch test services
-            sh(script: 'kompose up -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/docker-compose.yaml --provider "openshift" --emptyvols --insecure-repository=true', returnStatus: true)
+            sh(script: 'kompose up -f /tmp/workspace/sockstore-test-integration/src/sockstore/test/docker-compose.yaml --provider "openshift" --emptyvols --insecure-repository=true', returnStatus: true)
             sh "sleep 30"
           }
           
@@ -71,7 +71,7 @@ spec:
           }
 
           stage ('Test') {
-              sh "oc create -f /tmp/workspace/sockstore-test-qjppipe/src/sockstore/test/test-pod.yaml"
+              sh "oc create -f /tmp/workspace/sockstore-test-integration/src/sockstore/test/test-pod.yaml"
               for(checkTestRes = 0; checkTestRes < 100; checkTestRes++) {
                 def output = sh(script: 'oc get pod/sockstore-test -o go-template="{{range .status.containerStatuses}}{{.state.terminated.exitCode}}{{end}}"', returnStdout: true)
                 if (output == "<no value>") {

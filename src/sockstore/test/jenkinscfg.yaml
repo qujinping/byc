@@ -11,7 +11,7 @@ data:
       <name>sockstore</name>                                                                                                                                           
       <instanceCap>2147483647</instanceCap>                                                                                                                        
       <idleMinutes>0</idleMinutes>                                                                                                                                 
-      <label>qjp</label>                                                                                                                                         
+      <label>xiaomi</label>                                                                                                                                         
       <serviceAccount>jenkins</serviceAccount>                                                                                                                     
       <nodeSelector></nodeSelector>                                                                                                                                
       <volumes/>                                                                                                                                                   
