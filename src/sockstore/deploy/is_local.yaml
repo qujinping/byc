@@ -1,0 +1,168 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: rabbitmq
+    spec:
+      tags:
+      - name: 3
+        from:
+          kind: ImageStreamTag
+          name: rabbitmq:3
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: zipkin
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: zipkin:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: edge-router
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: edge-router:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: front-end
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: front-end:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: orders-db
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: orders-db:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: orders
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: orders:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: payment
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: payment:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: queue-master
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: queue-master:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: shipping
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: shipping:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: user
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: user:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: user-db
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: user-db:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: cart-db
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: cart-db:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: cart
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: cart:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: catalogue-db
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: catalogue-db:latest
+          namespace: sockstore
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      name: catalogue
+    spec:
+      tags:
+      - name: latest
+        from:
+          kind: ImageStreamTag
+          name: catalogue:latest
+          namespace: sockstore

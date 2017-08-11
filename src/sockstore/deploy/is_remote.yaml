@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: List
+items:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: edge-router
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: front-end
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: orders
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: payment
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: queue-master
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: shipping
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: user
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: user-db
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: cart
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: catalogue-db
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: catalogue
+    spec: {}
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: mysql
+    spec: 
+      tags:
+      - name: "5.7"
+        from:
+          kind: DockerImage
+          name: mysql:5.7
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: mongo
+    spec: 
+      tags:
+      - name: "3"
+        from:
+          kind: DockerImage
+          name: mongo:3
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: orders-db
+    spec: 
+      tags:
+      - name: "latest"
+        from:
+          kind: DockerImage
+          name: mongo:3
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: cart-db
+    spec: 
+      tags:
+      - name: "latest"
+        from:
+          kind: DockerImage
+          name: mongo:3
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: rabbitmq
+    spec: 
+      tags:
+      - name: "3"
+        from:
+          kind: DockerImage
+          name: rabbitmq:3
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: zipkin
+    spec: 
+      tags:
+      - name: "3"
+        from:
+          kind: DockerImage
+          name: openzipkin/zipkin
