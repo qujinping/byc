@@ -14,7 +14,12 @@ data:
       <label>xiaomi</label>                                                                                                                                         
       <serviceAccount>jenkins</serviceAccount>                                                                                                                     
       <nodeSelector></nodeSelector>                                                                                                                                
-      <volumes/>                                                                                                                                                   
+      <volumes>
+        <org.csanchez.jenkins.plugins.kubernetes.volumes.SecretVolume>
+          <secretName>jenkins</secretName> 
+          <mountPath>/var/run/secrets/xiaomi.com/jenkins</mountPath>
+        </org.csanchez.jenkins.plugins.kubernetes.volumes.SecretVolume>
+      </volumes>
       <containers>                                                                                                                                                 
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>                                                                                                
           <name>jnlp</name>                                                                                                                                        

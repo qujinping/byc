@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  name: c4-deploy
+spec:
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        node('xiaomi') {
+            
+          def srctoken = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
+          def desttoken = readFile('/var/run/secrets/xiaomi.com/jenkins/satoken').trim()
+        
+          stage ('Deployment of image') {
+            sh "skopeo --debug copy  --src-creds serviceaccount:${srctoken} --src-tls-verify=false --dest-creds serviceaccount:${desttoken} --dest-tls-verify=false  docker://docker-registry.default.svc.cluster.local:5000/sockstore/cart:latest docker://registry.10.132.21.11.xip.io/sockstore-prod/cart:prod"
+          }
+          
+          stage ('On site deployment') {
+            sh 'oc login --insecure-skip-tls-verify=true --token=${desttoken} https://c4-container-cloud04.bj:8443'
+            sh 'oc project sockstore-prod'
+            sh 'oc deploy --latest dc/cart'
+          }
+        }
