@@ -7,7 +7,7 @@ spec:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfile: |-
-        node('xiaomi') {
+        node('xiaomi-test') {
           def services =     ['cart', 'carts-db', 'catalogue', 'catalogue-db', 'edge-router', 'front-end', 'orders', 'orders-db', 'payment', 'queue-master', 'rabbitmq', 'shipping', 'user', 'user-db', 'zipkin'] as String[]
           def servicePorts = [8080,    27017,     8080,        3306,            8080,         8079,         8080,     27017,       8080,      8080,           5672,       8080,       8080,   27017,     9411] as int[]
 

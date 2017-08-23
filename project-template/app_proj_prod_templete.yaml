@@ -139,6 +139,22 @@ objects:
     name: ${PROJECT_ADMIN_USER}
   userNames:
   - ${PROJECT_ADMIN_USER}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata: 
+   name: jenkins
+- apiVersion: v1
+  kind: RoleBinding
+  metadata:
+    name: jenkins
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: jenkins
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:jenkins
 parameters:
 - name: PROJECT_NAME
   description: Name of the project

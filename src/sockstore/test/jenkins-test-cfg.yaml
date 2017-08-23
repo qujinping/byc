@@ -3,23 +3,18 @@ kind: ConfigMap
 metadata:
   labels:
     role: jenkins-slave
-  name: jenkins-slave
+  name: jenkins-test
 data:
   template1: |-
     <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>                                                                                                          
       <inheritFrom></inheritFrom>                                                                                                                                  
-      <name>sockstore</name>                                                                                                                                           
+      <name>sockstore-test</name>                                                                                                                                           
       <instanceCap>2147483647</instanceCap>                                                                                                                        
       <idleMinutes>0</idleMinutes>                                                                                                                                 
-      <label>xiaomi</label>                                                                                                                                         
+      <label>xiaomi-test</label>                                                                                                                                         
       <serviceAccount>jenkins</serviceAccount>                                                                                                                     
       <nodeSelector></nodeSelector>                                                                                                                                
-      <volumes>
-        <org.csanchez.jenkins.plugins.kubernetes.volumes.SecretVolume>
-          <secretName>jenkins</secretName> 
-          <mountPath>/var/run/secrets/xiaomi.com/jenkins</mountPath>
-        </org.csanchez.jenkins.plugins.kubernetes.volumes.SecretVolume>
-      </volumes>
+      <volumes></volumes>
       <containers>                                                                                                                                                 
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>                                                                                                
           <name>jnlp</name>                                                                                                                                        

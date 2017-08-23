@@ -1,0 +1,75 @@
+kind: Template
+apiVersion: v1
+objects:
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-${SITE}-deploy
+    spec:
+      strategy:
+        type: JenkinsPipeline
+        jenkinsPipelineStrategy:
+          jenkinsfile: |-
+            node("${JENKINS_SLAVE_IMAGE}") {
+                
+              def srctoken = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
+              def desttoken = readFile('/var/run/secrets/xiaomi.com/jenkins/satoken').trim()
+            
+              stage ('Deployment of image') {
+                sh "skopeo --debug copy  --src-creds='serviceaccount:${srctoken}' --src-tls-verify=${APP_SOURCE_IMAGE_TLS_VERIFY} --dest-creds='serviceaccount:${desttoken}' --dest-tls-verify=${APP_DEST_IMAGE_TLS_VERIFY}  docker://${APP_SOURCE_IMAGE} docker://${APP_DEST_IMAGE}"
+              }
+              
+              stage ('On site deployment') {
+                sh """
+                set +x
+                oc login --insecure-skip-tls-verify=true --token=${desttoken} ${SITE_URI}
+                oc project ${APP_DEST_PROJECT_NAME}
+                oc rollout latest dc/${APP_DC} -n ${APP_DEST_PROJECT_NAME}
+                """
+              }
+            }
+parameters:
+  - name: JENKINS_SLAVE_IMAGE
+    value: 'xiaomi-deploy'
+    displayName: Image name of Jenkins slave
+    description: Image name of Jenkins slave
+    required: true
+  - name: APP_NAME
+    displayName: APP's name
+    description: The name of application to be deployed
+    required: true
+  - name: APP_DC
+    displayName: APP's deployment config
+    description: The deployment config of application to be deployed
+    required: true 
+  - name: SITE
+    displayName: Site Name
+    description: The name of site where to be deployed 
+    required: true 
+  - name: SITE_URI
+    value: "https://c4-container-cloud04.bj:8443"
+    displayName: Site's URI 
+    description: The uri of site where to be deployed 
+    required: true 
+  - name: APP_SOURCE_IMAGE
+    displayName: App's source image 
+    description: Apps source image to be deployed to remote site
+    required: true 
+  - name: APP_SOURCE_IMAGE_TLS_VERIFY
+    value: "false"
+    displayName: Boolean flag of verify tls of source image
+    description: Whether or not to verify tls whilst retrieval of App's source image 
+    required: false 
+  - name: APP_DEST_IMAGE
+    displayName: App's destination image 
+    description: Apps destination image to be used to do deployment on remote site
+    required: true 
+  - name: APP_DEST_IMAGE_TLS_VERIFY
+    value: "false"
+    displayName: Boolean flag of verify tls of destination image
+    description: Whether or not to verify tls whilst upload of App's destination image 
+    required: false 
+  - name: APP_DEST_PROJECT_NAME
+    displayName: APP's destination project name
+    description: The project name of application to be deployed
+    required: true

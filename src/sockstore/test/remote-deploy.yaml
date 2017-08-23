@@ -7,7 +7,7 @@ spec:
     type: JenkinsPipeline
     jenkinsPipelineStrategy:
       jenkinsfile: |-
-        node('xiaomi') {
+        node('xiaomi-deploy') {
             
           def srctoken = readFile('/var/run/secrets/kubernetes.io/serviceaccount/token').trim()
           def desttoken = readFile('/var/run/secrets/xiaomi.com/jenkins/satoken').trim()
@@ -17,8 +17,11 @@ spec:
           }
           
           stage ('On site deployment') {
-            sh 'oc login --insecure-skip-tls-verify=true --token=${desttoken} https://c4-container-cloud04.bj:8443'
-            sh 'oc project sockstore-prod'
-            sh 'oc deploy --latest dc/cart'
+            sh """
+            set +x
+            oc login --insecure-skip-tls-verify=true --token=${desttoken} https://c4-container-cloud04.bj:8443
+            oc project sockstore-prod
+            oc deploy --latest dc/cart
+            """
           }
         }
