@@ -69,6 +69,6 @@ spec:
       - cart
       from:
         kind: ImageStreamTag
-        name: cart:latest
+        name: cart:prod
     type: ImageChange
 status: {}

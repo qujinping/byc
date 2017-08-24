@@ -1,8 +1,31 @@
 # !/bin/bash
 
+set -eo pipefail
+
+BASE="`pwd`/`dirname $0`/../../.."
+
+echo "=========================="
+echo "Please create secret first"
+echo "=========================="
+
 oc process openshift/template/jenkins-persistent -p NAMESPACE=tools -p JENKINS_IMAGE_STREAM_TAG=jenkins-2-centos7:latest -p VOLUME_CAPACITY=2Gi -p MEMORY_LIMIT=1024Mi | oc create -f - 
 
-oc create --save-config -f jenkinscfg.yaml
+oc create --save-config -f jenkins-deploy-cfg.yaml
+oc create --save-config -f jenkins-test-cfg.yaml
 oc create --save-config -f int-test.yaml
-oc create --save-config -f remote-deploy.yaml
 
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=catalogue -p APP_DC=catalogue -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/catalogue:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/catalogue:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=catalogue-db -p APP_DC=catalogue-db -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/catalogue-db:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/catalogue-db:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=cart -p APP_DC=cart -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/cart:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/cart:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=cart-db -p APP_DC=cart-db -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/cart-db:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/cart-db:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=user -p APP_DC=user -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/user:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/user:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=user-db -p APP_DC=user-db -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/user-db:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/user-db:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=orders -p APP_DC=orders -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/orders:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/orders:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=orders-db -p APP_DC=orders-db -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/orders-db:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/orders-db:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=shipping -p APP_DC=shipping -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/shipping:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/shipping:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=payment -p APP_DC=payment -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/payment:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/payment:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=queue-master -p APP_DC=queue-master -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/queue-master:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/queue-master:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=front-end -p APP_DC=front-end -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/front-end:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/front-end:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=rabbitmq -p APP_DC=rabbitmq -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/rabbitmq:3" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/rabbitmq:3" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=edge-router -p APP_DC=edge-router -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/edge-router:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/edge-router:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -
+oc process -f $BASE/src/common/remote_deploy_templ.yaml -p APP_NAME=zipkin -p APP_DC=zipkin -p SITE=c4 -p SITE_URI="https://c4-container-cloud04.bj:8443" -p APP_SOURCE_IMAGE="docker-registry.default.svc.cluster.local:5000/sockstore/zipkin:latest" -p APP_DEST_IMAGE="registry.10.132.21.11.xip.io/sockstore-prod/zipkin:prod" -p APP_DEST_PROJECT_NAME="sockstore-prod" |oc create -f -

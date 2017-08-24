@@ -70,6 +70,6 @@ spec:
       - queue-master
       from:
         kind: ImageStreamTag
-        name: queue-master:latest
+        name: queue-master:prod
     type: ImageChange
 status: {}

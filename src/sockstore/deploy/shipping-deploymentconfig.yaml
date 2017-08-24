@@ -70,6 +70,6 @@ spec:
       - shipping
       from:
         kind: ImageStreamTag
-        name: shipping:latest
+        name: shipping:prod
     type: ImageChange
 status: {}

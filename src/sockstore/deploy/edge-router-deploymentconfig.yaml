@@ -75,6 +75,6 @@ spec:
       - edge-router
       from:
         kind: ImageStreamTag
-        name: edge-router:latest
+        name: edge-router:prod
     type: ImageChange
 status: {}

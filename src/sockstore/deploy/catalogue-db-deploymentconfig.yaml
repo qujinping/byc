@@ -44,6 +44,6 @@ spec:
       - catalogue-db
       from:
         kind: ImageStreamTag
-        name: catalogue-db:latest
+        name: catalogue-db:prod
     type: ImageChange
 status: {}

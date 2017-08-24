@@ -47,6 +47,6 @@ spec:
       - orders-db
       from:
         kind: ImageStreamTag
-        name: orders-db:latest
+        name: orders-db:prod
     type: ImageChange
 status: {}

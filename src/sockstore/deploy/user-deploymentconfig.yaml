@@ -64,6 +64,6 @@ spec:
       - user
       from:
         kind: ImageStreamTag
-        name: user:latest
+        name: user:prod
     type: ImageChange
 status: {}

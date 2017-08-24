@@ -60,59 +60,29 @@ items:
     apiVersion: v1
     metadata:
       name: mysql
-    spec: 
-      tags:
-      - name: "5.7"
-        from:
-          kind: DockerImage
-          name: mysql:5.7
+    spec: {}
   - kind: ImageStream
     apiVersion: v1
     metadata:
       name: mongo
-    spec: 
-      tags:
-      - name: "3"
-        from:
-          kind: DockerImage
-          name: mongo:3
+    spec: {}
   - kind: ImageStream
     apiVersion: v1
     metadata:
       name: orders-db
-    spec: 
-      tags:
-      - name: "latest"
-        from:
-          kind: DockerImage
-          name: mongo:3
+    spec: {}
   - kind: ImageStream
     apiVersion: v1
     metadata:
       name: cart-db
-    spec: 
-      tags:
-      - name: "latest"
-        from:
-          kind: DockerImage
-          name: mongo:3
+    spec: {}
   - kind: ImageStream
     apiVersion: v1
     metadata:
       name: rabbitmq
-    spec: 
-      tags:
-      - name: "3"
-        from:
-          kind: DockerImage
-          name: rabbitmq:3
+    spec: {}
   - kind: ImageStream
     apiVersion: v1
     metadata:
       name: zipkin
-    spec: 
-      tags:
-      - name: "3"
-        from:
-          kind: DockerImage
-          name: openzipkin/zipkin
+    spec: {}

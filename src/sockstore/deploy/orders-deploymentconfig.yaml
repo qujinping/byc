@@ -70,6 +70,6 @@ spec:
       - orders
       from:
         kind: ImageStreamTag
-        name: orders:latest
+        name: orders:prod
     type: ImageChange
 status: {}

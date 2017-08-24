@@ -43,6 +43,6 @@ spec:
       - zipkin
       from:
         kind: ImageStreamTag
-        name: zipkin:latest
+        name: zipkin:prod
     type: ImageChange
 status: {}

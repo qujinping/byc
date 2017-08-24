@@ -61,6 +61,6 @@ spec:
       - catalogue
       from:
         kind: ImageStreamTag
-        name: catalogue:latest
+        name: catalogue:prod
     type: ImageChange
 status: {}

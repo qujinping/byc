@@ -59,6 +59,6 @@ spec:
       - payment
       from:
         kind: ImageStreamTag
-        name: payment:latest
+        name: payment:prod
     type: ImageChange
 status: {}

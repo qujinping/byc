@@ -50,6 +50,6 @@ spec:
       - front-end
       from:
         kind: ImageStreamTag
-        name: front-end:latest
+        name: front-end:prod
     type: ImageChange
 status: {}

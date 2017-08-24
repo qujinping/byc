@@ -47,6 +47,6 @@ spec:
       - cart-db
       from:
         kind: ImageStreamTag
-        name: cart-db:latest
+        name: cart-db:prod
     type: ImageChange
 status: {}

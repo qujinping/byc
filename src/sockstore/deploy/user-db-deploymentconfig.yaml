@@ -51,6 +51,6 @@ spec:
       - user-db
       from:
         kind: ImageStreamTag
-        name: user-db:latest
+        name: user-db:prod
     type: ImageChange
 status: {}
