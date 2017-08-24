@@ -16,7 +16,9 @@ objects:
               def desttoken = readFile('/var/run/secrets/xiaomi.com/jenkins/satoken').trim()
             
               stage ('Deployment of image') {
-                sh "skopeo --debug copy  --src-creds='serviceaccount:${srctoken}' --src-tls-verify=${APP_SOURCE_IMAGE_TLS_VERIFY} --dest-creds='serviceaccount:${desttoken}' --dest-tls-verify=${APP_DEST_IMAGE_TLS_VERIFY}  docker://${APP_SOURCE_IMAGE} docker://${APP_DEST_IMAGE}"
+                sh """
+                skopeo --debug copy  --src-creds=serviceaccount:${srctoken} --src-tls-verify=${APP_SOURCE_IMAGE_TLS_VERIFY} --dest-creds=serviceaccount:${desttoken} --dest-tls-verify=${APP_DEST_IMAGE_TLS_VERIFY}  docker://${APP_SOURCE_IMAGE} docker://${APP_DEST_IMAGE}
+                """
               }
               
               stage ('On site deployment') {
