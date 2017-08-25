@@ -142,7 +142,8 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata: 
-   name: jenkins
+    name: jenkins
+    namespace: ${PROJECT_NAME}
 - apiVersion: v1
   kind: RoleBinding
   metadata:

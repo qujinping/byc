@@ -218,6 +218,34 @@
             "userNames": [
                 "qujinping"
             ]
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "ServiceAccount",
+            "metadata": {
+                "name": "jenkins",
+                "namespace": "sockstore-prod"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "jenkins",
+                "namespace": "sockstore-prod"
+            },
+            "roleRef": {
+                "name": "edit"
+            },
+            "subjects": [
+                {
+                    "kind": "ServiceAccount",
+                    "name": "jenkins"
+                }
+            ],
+            "userNames": [
+                "system:serviceaccount:sockstore-prod:jenkins"
+            ]
         }
     ]
 }

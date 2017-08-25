@@ -6,8 +6,15 @@ set -eo pipefail
 oc create configmap edge-router --from-file=traefik.toml
 
 # create deployment config & service
-ls *-service.yaml |awk '{print "\"" "oc create -f " $1 "\""}' |xargs sh -c
-ls *-deploymentconfig.yaml |awk '{print "\"" "oc create -f " $1 "\""}' |xargs sh -c
+for file in ./*-service.yaml
+do
+    oc create -f $file
+done
+
+for file in ./*-deploymentconfig.yaml
+do
+    oc create -f $file
+done
 
 # Create image stream
 # if you use different docker registry in the cluster for remote deployment, do below
