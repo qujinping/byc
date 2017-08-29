@@ -26,7 +26,8 @@ objects:
                 set +x
                 oc login --insecure-skip-tls-verify=true --token=${desttoken} ${SITE_URI}
                 oc project ${APP_DEST_PROJECT_NAME}
-                oc rollout latest dc/${APP_DC} -n ${APP_DEST_PROJECT_NAME}
+                # rollout the latest version of dc. If failed, it may be caused by image stream
+                oc rollout latest dc/${APP_DC} -n ${APP_DEST_PROJECT_NAME} || true
                 oc logs -f dc/${APP_DC} -n ${APP_DEST_PROJECT_NAME}
                 """
               }
