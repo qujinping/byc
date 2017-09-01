@@ -70,7 +70,7 @@ do
   then
     echo "OS upgrade for this node $NODE is required to be done manually(because of reboot) as below:"
     echo "Step 1: make the node not schedulable"
-    echo "adm manage-node $NODE --schedulable=false"
+    echo "oadm manage-node $NODE --schedulable=false"
     echo "Step 2: drain out those pods running in the node"
     echo "oadm drain $NODE --force --delete-local-data --ignore-daemonsets"
     echo "Step 3: update OS kernel and system software if any latest version found"
@@ -80,7 +80,7 @@ do
     echo "reboot"
     echo "Step 5: make the node schedulable"
     echo "oadm manage-node $NODE --schedulable=true"
-    echo "
+    echo ""
     continue
   fi
 
