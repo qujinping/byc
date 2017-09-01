@@ -17,6 +17,7 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
+THIS_NODE=`hostname`
 INVENTORY_FILE=""
 DRYRUN="false"
 for i in "$@"
@@ -64,6 +65,24 @@ for NODE in $NODES
 do
   echo ""
   echo "======= Node: $NODE ========"
+
+  if [ $NODE == "$THIS_NODE" ]
+  then
+    echo "OS upgrade for this node $NODE is required to be done manually(because of reboot) as below:"
+    echo "Step 1: make the node not schedulable"
+    echo "adm manage-node $NODE --schedulable=false"
+    echo "Step 2: drain out those pods running in the node"
+    echo "oadm drain $NODE --force --delete-local-data --ignore-daemonsets"
+    echo "Step 3: update OS kernel and system software if any latest version found"
+    echo "yum makecache fast"
+    echo "yum update -y"
+    echo "Step 4: reboot OS"
+    echo "reboot"
+    echo "Step 5: make the node schedulable"
+    echo "oadm manage-node $NODE --schedulable=true"
+    echo "
+    continue
+  fi
 
   if [[ $DRYRUN == "true" ]]
   then
