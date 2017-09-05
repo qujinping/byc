@@ -30,7 +30,7 @@ items:
               destinationDir: .
       strategy:
         dockerStrategy:
-          dockerfilePath: Dockerfile.oc150
+          dockerfilePath: Dockerfile.v3.6.0
           from: 
             kind: ImageStreamTag
             name: jenkins-slave-base-centos7:latest
@@ -38,7 +38,7 @@ items:
       output:
         to:
           kind: ImageStreamTag
-          name: jenkins-slave:openshift-15
+          name: jenkins-slave:openshift-v3.6.0
       triggers:
         - type: ConfigChange
         - type: ImageChange
@@ -77,7 +77,7 @@ items:
               destinationDir: .
       strategy:
         dockerStrategy:
-          dockerfilePath: Dockerfile.oc141
+          dockerfilePath: Dockerfile.v1.5.0
           from: 
             kind: ImageStreamTag
             name: jenkins-slave-base-centos7:latest
@@ -85,7 +85,7 @@ items:
       output:
         to:
           kind: ImageStreamTag
-          name: jenkins-slave:openshift-14
+          name: jenkins-slave:openshift-v1.5.0
       triggers:
         - type: ConfigChange
         - type: ImageChange
