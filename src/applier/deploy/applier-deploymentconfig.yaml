@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: null
+  labels:
+    service: applier
+  name: applier
+spec:
+  replicas: 1
+  selector:
+    service: applier
+  strategy:
+    resources: {}
+  template:
+    metadata:
+      labels:
+        service: applier
+    spec:
+      containers:
+        - name: "applier"
+          command:
+            - "/opt/app-root/scripts/run"
+          env:
+            - name: "REPO_PATH"
+              value: "/opt/app-root/data/git"
+            - name: "LISTEN_PORT"
+              value: "2020"
+          image: ""
+          ports:
+            - containerPort: 2020
+          volumeMounts:
+            - name: "git-repo"
+              mountPath: "/opt/app-root/data"
+        - name: "gitsync"
+          command:
+            - "/opt/app-root/scripts/run"
+          env:
+            - name: "GIT_SYNC_REPO"
+              value: "https://github.com/qujinping/byc.git"
+            - name: "GIT_SYNC_DEST"
+              value: "git"
+          image: ""
+          ports:
+            - containerPort: 2020
+          volumeMounts:
+            - name: "git-repo"
+              mountPath: "/opt/app-root/data"
+      serviceAccount: applier
+      serviceAccountName: applier
+      volumes:
+        - name: "git-repo"
+          emptyDir: {}
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - applier
+      from:
+        kind: ImageStreamTag
+        name: applier:latest
+    type: ImageChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - gitsync
+      from:
+        kind: ImageStreamTag
+        name: gitsync:latest
+    type: ImageChange
+status: {}

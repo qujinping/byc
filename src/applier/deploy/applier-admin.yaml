@@ -1,0 +1,11 @@
+kind: ClusterRoleBinding
+apiVersion: v1
+metadata:
+  name: applier-admin
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: applier
+  namespace: applier
